@@ -9,6 +9,8 @@ public class SagaStep {
     String id;
     String endPointName;
     String serviceName;
+    String buildJsonFrom;
+    String buildJsonTo;
 
     int sequence;
 
@@ -42,5 +44,21 @@ public class SagaStep {
 
     public void setServiceName(String serviceName) {
         this.serviceName = serviceName;
+    }
+
+    public String getBuildJsonFrom() {
+        return buildJsonFrom;
+    }
+
+    public void setBuildJsonFrom(String buildJsonFrom) {
+        this.buildJsonFrom = buildJsonFrom;
+    }
+
+    public String getBuildJsonTo() {
+        return buildJsonTo;
+    }
+
+    public void setBuildJsonTo(String buildJsonTo) {
+        this.buildJsonTo = buildJsonTo;
     }
 }

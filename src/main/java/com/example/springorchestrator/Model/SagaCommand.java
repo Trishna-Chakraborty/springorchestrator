@@ -6,18 +6,18 @@ import java.util.List;
 @Entity
 public class SagaCommand {
     @Id
-    int id;
+    String id;
 
     String command;
 
     @OneToMany(cascade = CascadeType.ALL)
     List<SagaStep> sagaStepList;
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
