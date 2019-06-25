@@ -9,14 +9,14 @@ import java.util.UUID;
 public class OrderEntity {
 
    // @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+    private String id;
     private OrderState orderState;
 
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(String id) {
         this.id = id;
     }
 
