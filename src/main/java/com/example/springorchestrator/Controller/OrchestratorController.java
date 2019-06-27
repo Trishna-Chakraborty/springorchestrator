@@ -223,7 +223,7 @@ public class OrchestratorController {
 
        Random rand = new Random();
 
-        for(int i=1; i<=50; i++) {
+        for(int i=1; i<=100; i++) {
             customer.setId(""+i);
 
             System.out.println("Request no "+i + " is going to be executed");
