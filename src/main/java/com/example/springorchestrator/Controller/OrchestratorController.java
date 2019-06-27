@@ -22,10 +22,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -221,7 +218,32 @@ public class OrchestratorController {
 
 
 
+   @PostMapping("orchestrator")
+   public void postSagaArbitrary(@RequestBody  Customer customer) throws InterruptedException {
 
+       Random rand = new Random();
+
+        for(int i=1; i<=500; i++) {
+            customer.setId(""+i);
+
+            System.out.println("Request no"+i + "is going to be executed");
+            int value = rand.nextInt(200);
+            TimeUnit.MILLISECONDS.sleep(value);
+
+            int id = rand.nextInt(3);
+            SagaCommand sagaCommand = sagaCommandRepository.findById(id + 1).orElse(null);
+
+            RestTemplate restTemplate = new RestTemplate();
+            restTemplate.postForEntity("http://springorchestrator-ngfs-core-framework-apps.115.127.24.184.nip.io/orchestrator/" + sagaCommand.getCommand(), customer, void.class);
+
+
+            System.out.println("Request no"+i + "is executed successfully");
+        }
+
+
+
+
+   }
 
 
 
@@ -242,11 +264,11 @@ public class OrchestratorController {
 
 
 
-        for(int i=1; i<=500; i++) {
+       // for(int i=1; i<=2; i++) {
             Random rand = new Random();
-            int value = rand.nextInt(400);
-            TimeUnit.MILLISECONDS.sleep(value);
-            customer.setId(String.valueOf(i));
+           /* int value = rand.nextInt(400);
+            TimeUnit.MILLISECONDS.sleep(value);*/
+           // customer.setId(String.valueOf(i));
             String request=objectMapper.writeValueAsString(customer);
             for (SagaStep sagaStep : sagaStepList) {
                 Method method = this.getClass().getDeclaredMethod(sagaStep.getBuildJsonFrom() + "To" + sagaStep.getBuildJsonTo(), String.class);
@@ -267,8 +289,7 @@ public class OrchestratorController {
 
 
             }
-        }
-
+      //  }
 
 
 
