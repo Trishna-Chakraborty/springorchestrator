@@ -226,18 +226,18 @@ public class OrchestratorController {
         for(int i=1; i<=500; i++) {
             customer.setId(""+i);
 
-            System.out.println("Request no"+i + "is going to be executed");
-            int value = rand.nextInt(200);
+            System.out.println("Request no "+i + "is going to be executed");
+            int value = rand.nextInt(50);
             TimeUnit.MILLISECONDS.sleep(value);
 
             int id = rand.nextInt(3) +1;
             SagaCommand sagaCommand = sagaCommandRepository.findById(id+"").orElse(null);
 
             RestTemplate restTemplate = new RestTemplate();
-            restTemplate.postForEntity("http://springorchestrator-ngfs-core-framework-apps.115.127.24.184.nip.io/orchestrator/" + sagaCommand.getCommand(), customer, void.class);
+            restTemplate.postForEntity("http://springorchestrator-ngfs-core-framework-apps.115.127.24.184.nip.io/orchestrator/" + sagaCommand.getCommand(), customer,String.class);
 
 
-            System.out.println("Request no"+i + "is executed successfully");
+            System.out.println("Request no "+i + "is executed successfully");
         }
 
 
@@ -248,7 +248,7 @@ public class OrchestratorController {
 
 
     @PostMapping("orchestrator/{command}")
-    public void postSagaCommand(@PathVariable("command") String command,@RequestBody Customer customer) throws IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InterruptedException {
+    public String postSagaCommand(@PathVariable("command") String command,@RequestBody Customer customer) throws IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InterruptedException {
 
         rabbitTemplate.setReplyTimeout(60000);
         ObjectMapper objectMapper= new ObjectMapper();
@@ -293,7 +293,7 @@ public class OrchestratorController {
 
 
 
-
+    return "done";
 
 
     }
