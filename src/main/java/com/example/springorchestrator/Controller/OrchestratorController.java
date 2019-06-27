@@ -223,10 +223,10 @@ public class OrchestratorController {
 
        Random rand = new Random();
 
-        for(int i=1; i<=500; i++) {
+        for(int i=1; i<=50; i++) {
             customer.setId(""+i);
 
-            System.out.println("Request no "+i + "is going to be executed");
+            System.out.println("Request no "+i + " is going to be executed");
             int value = rand.nextInt(50);
             TimeUnit.MILLISECONDS.sleep(value);
 
@@ -237,7 +237,7 @@ public class OrchestratorController {
             restTemplate.postForEntity("http://springorchestrator-ngfs-core-framework-apps.115.127.24.184.nip.io/orchestrator/" + sagaCommand.getCommand(), customer,String.class);
 
 
-            System.out.println("Request no "+i + "is executed successfully");
+            System.out.println("Request no "+i + " is executed successfully");
         }
 
 
