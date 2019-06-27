@@ -1,0 +1,69 @@
+
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  labels:
+    app: springorchestrator
+  name: springorchestrator
+  namespace: ngfs-core-framework
+spec:
+  replicas: 1
+  selector:
+    app: springorchestrator
+    deploymentconfig: springorchestrator
+  strategy:
+    activeDeadlineSeconds: 21600
+    resources: {}
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: springorchestrator
+        deploymentconfig: springorchestrator
+    spec:
+      containers:
+      - env:
+        - name: MYSQL_DATABASE
+          value: test
+        - name: MYSQL_USER
+          value: root
+        - name: MYSQL_ROOT_PASSWORD
+          value: trishna
+        image: 'mysql:5.6'
+        imagePullPolicy: IfNotPresent
+        name: mysqlserver
+        ports:
+        - containerPort: 3306
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: mysql-data
+      - image: docker-registry.default.svc:5000/ngfs-core-framework/springorchestrator
+        imagePullPolicy: Always
+        name: springorchestrator-service
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: mysql-data
+        persistentVolumeClaim:
+          claimName: springorchestrator
+  triggers:
+  - type: ConfigChange
+  - imageChangeParams:
+      automatic: true
+      containerNames:
+      - springorchestrator-service
+      from:
+        kind: ImageStreamTag
+        name: 'springorchestrator:latest'
+        namespace: ngfs-core-framework
+    type: ImageChange

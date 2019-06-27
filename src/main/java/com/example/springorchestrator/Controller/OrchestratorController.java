@@ -24,6 +24,7 @@ import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -237,15 +238,17 @@ public class OrchestratorController {
 
        // String request=json;
 
-        for(int i=1; i<=1000; i++) {
-            TimeUnit.MILLISECONDS.sleep(200);
+        for(int i=1; i<=2; i++) {
+            Random rand = new Random();
+            int value = rand.nextInt(400);
+            TimeUnit.MILLISECONDS.sleep(value);
             customer.setId(String.valueOf(i));
             String request=objectMapper.writeValueAsString(customer);
             for (SagaStep sagaStep : sagaStepList) {
                 Method method = this.getClass().getDeclaredMethod(sagaStep.getBuildJsonFrom() + "To" + sagaStep.getBuildJsonTo(), String.class);
                 request = (String) method.invoke(this, request);
 
-                LogFile logFile = new LogFile(callFlowRefId, sagaStep.getServiceName(), sagaStep.getServiceName(), request);
+                LogFile logFile = new LogFile(callFlowRefId, sagaStep.getEndPointName(), sagaStep.getServiceName(), request);
                 System.out.println("Requesting to " + sagaStep.getServiceName()+" with endPoint " +sagaStep.getEndPointName()+ " : " + request);
                 request = (String) rabbitTemplate.convertSendAndReceive(sagaStep.getServiceName() + "_exchange", sagaStep.getEndPointName(), request);
                 if (request == null) {
