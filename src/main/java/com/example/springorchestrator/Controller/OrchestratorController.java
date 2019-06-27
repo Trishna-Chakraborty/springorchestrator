@@ -241,7 +241,7 @@ public class OrchestratorController {
         for(int i=1; i<=500; i++) {
             Random rand = new Random();
             int value = rand.nextInt(400);
-            //TimeUnit.MILLISECONDS.sleep(value);
+            TimeUnit.MILLISECONDS.sleep(value);
             customer.setId(String.valueOf(i));
             String request=objectMapper.writeValueAsString(customer);
             for (SagaStep sagaStep : sagaStepList) {
