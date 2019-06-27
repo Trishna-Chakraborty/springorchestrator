@@ -230,8 +230,8 @@ public class OrchestratorController {
             int value = rand.nextInt(200);
             TimeUnit.MILLISECONDS.sleep(value);
 
-            int id = rand.nextInt(3);
-            SagaCommand sagaCommand = sagaCommandRepository.findById(id + 1).orElse(null);
+            int id = rand.nextInt(3) +1;
+            SagaCommand sagaCommand = sagaCommandRepository.findById(id+"").orElse(null);
 
             RestTemplate restTemplate = new RestTemplate();
             restTemplate.postForEntity("http://springorchestrator-ngfs-core-framework-apps.115.127.24.184.nip.io/orchestrator/" + sagaCommand.getCommand(), customer, void.class);

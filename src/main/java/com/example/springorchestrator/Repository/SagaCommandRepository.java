@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface SagaCommandRepository extends JpaRepository<SagaCommand, Integer> {
+public interface SagaCommandRepository extends JpaRepository<SagaCommand, String> {
 
 
     public SagaCommand findSagaCommandByCommand(String name);
