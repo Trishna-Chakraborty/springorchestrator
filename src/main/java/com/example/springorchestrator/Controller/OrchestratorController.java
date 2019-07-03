@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 @RestController
+
 public class OrchestratorController {
 
     @Autowired
@@ -66,7 +67,7 @@ public class OrchestratorController {
 
     }
     /*@PostMapping("orchestrator")
-    public void postOrder(@RequestBody String json) throws IOException {
+    public void postOrder(@RequestBodyCustom String json) throws IOException {
 
         rabbitTemplate.setReplyTimeout(60000);
 

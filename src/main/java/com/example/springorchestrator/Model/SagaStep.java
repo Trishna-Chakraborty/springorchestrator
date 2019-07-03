@@ -1,18 +1,23 @@
 package com.example.springorchestrator.Model;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class SagaStep {
     @Id
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
     String id;
+    String name;
     String endPointName;
     String serviceName;
     String buildJsonFrom;
     String buildJsonTo;
-
-    int sequence;
 
     public String getEndPointName() {
         return endPointName;
@@ -28,14 +33,6 @@ public class SagaStep {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public int getSequence() {
-        return sequence;
-    }
-
-    public void setSequence(int sequence) {
-        this.sequence = sequence;
     }
 
     public String getServiceName() {
@@ -60,5 +57,14 @@ public class SagaStep {
 
     public void setBuildJsonTo(String buildJsonTo) {
         this.buildJsonTo = buildJsonTo;
+    }
+
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
