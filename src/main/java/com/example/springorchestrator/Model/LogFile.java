@@ -14,7 +14,7 @@ public class LogFile {
 
     @Id
     String id;
-
+    String callFlowInstanceId;
     String callFlowRefId;
     String timeStamp;
     String api;
@@ -82,8 +82,17 @@ public class LogFile {
     }
 
 
-    public LogFile( String callFlowRefId, String api, String microservice, String payLoad) {
+    public String getCallFlowInstanceId() {
+        return callFlowInstanceId;
+    }
+
+    public void setCallFlowInstanceId(String callFlowInstanceId) {
+        this.callFlowInstanceId = callFlowInstanceId;
+    }
+
+    public LogFile(String callFlowInstanceId, String callFlowRefId, String api, String microservice, String payLoad) {
         this.id = UUID.randomUUID().toString();
+        this.callFlowInstanceId=callFlowInstanceId;
         this.callFlowRefId = callFlowRefId;
         Date date = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");

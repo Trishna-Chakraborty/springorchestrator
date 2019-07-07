@@ -278,11 +278,12 @@ public class OrchestratorController {
             TimeUnit.MILLISECONDS.sleep(value);
             customer.setId(String.valueOf(i));
             String request=objectMapper.writeValueAsString(customer);
+            String callFlowInstanceId=UUID.randomUUID().toString();
             for (SagaStep sagaStep : sagaStepList) {
                 Method method = this.getClass().getDeclaredMethod(sagaStep.getBuildJsonFrom() + "To" + sagaStep.getBuildJsonTo(), String.class);
                 request = (String) method.invoke(this, request);
 
-                LogFile logFile = new LogFile(callFlowRefId, sagaStep.getEndPointName(), sagaStep.getServiceName(), request);
+                LogFile logFile = new LogFile(callFlowInstanceId,callFlowRefId, sagaStep.getEndPointName(), sagaStep.getServiceName(), request);
 
                 System.out.println("Requesting to " + sagaStep.getServiceName()+" with endPoint " +sagaStep.getEndPointName()+ " : " + request);
                 request = (String) rabbitTemplate.convertSendAndReceive(sagaStep.getServiceName() + "_exchange", sagaStep.getEndPointName(), request);
