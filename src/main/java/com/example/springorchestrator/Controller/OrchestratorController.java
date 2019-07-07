@@ -45,6 +45,10 @@ public class OrchestratorController {
     LogFileRepository logFileRepository;
 
 
+    @Autowired
+    OrchestratorLogPublisher orchestratorLogPublisher;
+
+
     @GetMapping("orchestrator/{command}")
     public void getOrder(@PathVariable("command")String command,String json) {
 
@@ -253,7 +257,7 @@ public class OrchestratorController {
     public String postSagaCommand(@PathVariable("command") String command,@RequestBody Customer customer) throws IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InterruptedException {
 
 
-        OrchestratorLogPublisher orchestratorLogPublisher= new OrchestratorLogPublisher();
+
         rabbitTemplate.setReplyTimeout(60000);
         ObjectMapper objectMapper= new ObjectMapper();
 
@@ -268,33 +272,35 @@ public class OrchestratorController {
 
 
 
-       // for(int i=1; i<=2; i++) {
+        for(int i=1; i<=50; i++) {
             Random rand = new Random();
-           /* int value = rand.nextInt(400);
-            TimeUnit.MILLISECONDS.sleep(value);*/
-           // customer.setId(String.valueOf(i));
+            int value = rand.nextInt(400);
+            TimeUnit.MILLISECONDS.sleep(value);
+            customer.setId(String.valueOf(i));
             String request=objectMapper.writeValueAsString(customer);
             for (SagaStep sagaStep : sagaStepList) {
                 Method method = this.getClass().getDeclaredMethod(sagaStep.getBuildJsonFrom() + "To" + sagaStep.getBuildJsonTo(), String.class);
                 request = (String) method.invoke(this, request);
 
                 LogFile logFile = new LogFile(callFlowRefId, sagaStep.getEndPointName(), sagaStep.getServiceName(), request);
-               orchestratorLogPublisher.log(logFile);
+
                 System.out.println("Requesting to " + sagaStep.getServiceName()+" with endPoint " +sagaStep.getEndPointName()+ " : " + request);
                 request = (String) rabbitTemplate.convertSendAndReceive(sagaStep.getServiceName() + "_exchange", sagaStep.getEndPointName(), request);
                 if (request == null) {
                     System.out.println("Error in " + sagaStep.getServiceName());
                     logFile.setStatus(Status.UNFINISHED);
                     logFileRepository.save(logFile);
+                    orchestratorLogPublisher.log(logFile);
                     break;
                 }
 
                 logFile.setStatus(Status.FINISHED);
                 logFileRepository.save(logFile);
+                orchestratorLogPublisher.log(logFile);
 
 
             }
-      //  }
+        }
 
 
 

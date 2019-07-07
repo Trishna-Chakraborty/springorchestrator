@@ -5,11 +5,14 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.gson.Gson;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
-@Service
+
+@Component
 public class Publisher {
     @Autowired
     RabbitTemplate rabbitTemplate;
