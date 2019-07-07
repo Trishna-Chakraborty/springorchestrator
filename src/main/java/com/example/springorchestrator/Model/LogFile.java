@@ -96,5 +96,6 @@ public class LogFile {
     }
 
     public LogFile() {
+        super();
     }
 }

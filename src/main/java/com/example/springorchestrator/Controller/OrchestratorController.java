@@ -1,6 +1,7 @@
 package com.example.springorchestrator.Controller;
 
 
+import com.example.springorchestrator.Common.OrchestratorLogPublisher;
 import com.example.springorchestrator.Model.*;
 import com.example.springorchestrator.Repository.LogFileRepository;
 import com.example.springorchestrator.Repository.SagaCommandRepository;
@@ -251,6 +252,8 @@ public class OrchestratorController {
     @PostMapping("orchestrator/{command}")
     public String postSagaCommand(@PathVariable("command") String command,@RequestBody Customer customer) throws IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InterruptedException {
 
+
+        OrchestratorLogPublisher orchestratorLogPublisher= new OrchestratorLogPublisher();
         rabbitTemplate.setReplyTimeout(60000);
         ObjectMapper objectMapper= new ObjectMapper();
 
@@ -276,6 +279,7 @@ public class OrchestratorController {
                 request = (String) method.invoke(this, request);
 
                 LogFile logFile = new LogFile(callFlowRefId, sagaStep.getEndPointName(), sagaStep.getServiceName(), request);
+               orchestratorLogPublisher.log(logFile);
                 System.out.println("Requesting to " + sagaStep.getServiceName()+" with endPoint " +sagaStep.getEndPointName()+ " : " + request);
                 request = (String) rabbitTemplate.convertSendAndReceive(sagaStep.getServiceName() + "_exchange", sagaStep.getEndPointName(), request);
                 if (request == null) {
