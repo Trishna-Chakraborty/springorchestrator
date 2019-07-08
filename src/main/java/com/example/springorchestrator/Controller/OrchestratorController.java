@@ -7,6 +7,7 @@ import com.example.springorchestrator.Repository.LogFileRepository;
 import com.example.springorchestrator.Repository.SagaCommandRepository;
 import com.example.springorchestrator.Repository.ServiceHostMappingRepository;
 import com.example.springorchestrator.SpringorchestratorApplication;
+import com.example.springorchestrator.Test.TestThread;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageBuilder;
@@ -251,6 +252,21 @@ public class OrchestratorController {
 
    }
 
+    @PostMapping("saga/threadCheck")
+    public void threadCheck(@RequestBody  Customer customer) throws InterruptedException {
+
+        for(int i=1; i<=10; i++){
+
+            TestThread t= new TestThread(i*100,customer);
+        }
+
+
+
+
+    }
+
+
+
 
 
     @PostMapping("orchestrator/{command}")
@@ -272,11 +288,11 @@ public class OrchestratorController {
 
 
 
-        for(int i=1; i<=50; i++) {
-            Random rand = new Random();
-            int value = rand.nextInt(400);
-            TimeUnit.MILLISECONDS.sleep(value);
-            customer.setId(String.valueOf(i));
+        //for(int i=1; i<=50; i++) {
+           // Random rand = new Random();
+         //   int value = rand.nextInt(400);
+          //  TimeUnit.MILLISECONDS.sleep(value);
+      //      customer.setId(String.valueOf(i));
             String request=objectMapper.writeValueAsString(customer);
             String callFlowInstanceId=UUID.randomUUID().toString();
             for (SagaStep sagaStep : sagaStepList) {
@@ -301,7 +317,7 @@ public class OrchestratorController {
 
 
             }
-        }
+       // }
 
 
 
