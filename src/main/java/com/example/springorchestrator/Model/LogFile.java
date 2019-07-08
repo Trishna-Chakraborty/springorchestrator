@@ -15,6 +15,7 @@ public class LogFile {
     @Id
     String id;
     String callFlowInstanceId;
+
     String callFlowRefId;
     String timeStamp;
     String api;
