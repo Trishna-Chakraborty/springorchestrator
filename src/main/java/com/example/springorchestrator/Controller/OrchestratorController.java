@@ -2,10 +2,12 @@ package com.example.springorchestrator.Controller;
 
 
 import com.example.springorchestrator.Common.OrchestratorLogPublisher;
+import com.example.springorchestrator.Common.Publisher;
 import com.example.springorchestrator.Model.*;
 import com.example.springorchestrator.Repository.LogFileRepository;
 import com.example.springorchestrator.Repository.SagaCommandRepository;
 import com.example.springorchestrator.Repository.ServiceHostMappingRepository;
+import com.example.springorchestrator.Service.OrchestratorService;
 import com.example.springorchestrator.SpringorchestratorApplication;
 import com.example.springorchestrator.Test.TestThread;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -50,6 +52,14 @@ public class OrchestratorController {
     OrchestratorLogPublisher orchestratorLogPublisher;
 
 
+    @Autowired
+    Publisher publisher;
+
+
+    @Autowired
+    OrchestratorService orchestratorService;
+
+
     @GetMapping("orchestrator/{command}")
     public void getOrder(@PathVariable("command")String command,String json) {
 
@@ -72,115 +82,13 @@ public class OrchestratorController {
 
 
     }
-    /*@PostMapping("orchestrator")
-    public void postOrder(@RequestBodyCustom String json) throws IOException {
-
-        rabbitTemplate.setReplyTimeout(60000);
-
-        ObjectMapper objectMapper= new ObjectMapper();
-        String object=null;
-
-
-        LogFile logFile= new LogFile();
-        logFile.setId(UUID.randomUUID().toString());
-        logFile.setApi("postOrder");
-        Date date = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
-        String formattedDate = sdf.format(date);
-        // System.out.println(formattedDate);
-        logFile.setTimeStamp(formattedDate);
-        logFile.setCallFlowRefId("1");
-        logFile.setPayLoad(json);
-        logFile.setMicroservice("customer");
-
-        System.out.println("Requesting to customer " + " : " + json);
-        object= (String) rabbitTemplate.convertSendAndReceive("customer_exchange","",json);
-        if(object== null){
-            System.out.println("Error in customer");
-            logFile.setStatus(Status.UNFINISHED);
-            logFileRepository.save(logFile);
-            return;
-        }
-
-        logFile.setStatus(Status.FINISHED);
-        logFileRepository.save(logFile);
-
-
-
-
-
-       logFile= new LogFile();
-        logFile.setId(UUID.randomUUID().toString());
-        logFile.setApi("postOrder");
-         date = new Date();
-        sdf = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
-        formattedDate = sdf.format(date);
-        // System.out.println(formattedDate);
-        logFile.setTimeStamp(formattedDate);
-        logFile.setCallFlowRefId("1");
-        logFile.setPayLoad(json);
-        logFile.setMicroservice("bank");
-
-
-
-        Customer customer=objectMapper.readValue(object,Customer.class);
-        Bank bank= new Bank();
-        bank.setBalance(customer.getBalance());
-
-
-
-
-        System.out.println("Requesting to bank " + " : " +bank);
-        object= (String) rabbitTemplate.convertSendAndReceive("bank_exchange","",objectMapper.writeValueAsString(bank));
-        if(object== null){
-            logFile.setStatus(Status.UNFINISHED);
-            logFileRepository.save(logFile);
-            System.out.println("Error in bank");
-            return;
-        }
-        logFile.setStatus(Status.FINISHED);
-        logFileRepository.save(logFile);
-
-
-
-        logFile= new LogFile();
-        logFile.setId(UUID.randomUUID().toString());
-        logFile.setApi("postOrder");
-        date = new Date();
-        sdf = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
-        formattedDate = sdf.format(date);
-        // System.out.println(formattedDate);
-        logFile.setTimeStamp(formattedDate);
-        logFile.setCallFlowRefId("1");
-        logFile.setPayLoad(json);
-        logFile.setMicroservice("order");
-
-
-
-        OrderEntity order= new OrderEntity();
-        order.setOrderState(OrderState.APPROVED);
-
-        System.out.println("Requesting to order " + " : " + order);
-        object= (String) rabbitTemplate.convertSendAndReceive("order_exchange","",objectMapper.writeValueAsString(order));
-        if(object== null){
-            System.out.println("Error in order");
-            logFile.setStatus(Status.UNFINISHED);
-            logFileRepository.save(logFile);
-            return;
-        }
-        logFile.setStatus(Status.FINISHED);
-        logFileRepository.save(logFile);
 
 
 
 
 
 
-
-
-    }*/
-
-
+/*
 
     public String jsonTocustomer(String jStr) throws IOException {
 
@@ -219,6 +127,7 @@ public class OrchestratorController {
         return  oStr;
 
     }
+*/
 
 
 
@@ -241,7 +150,7 @@ public class OrchestratorController {
             SagaCommand sagaCommand = sagaCommandRepository.findById(id+"").orElse(null);
 
             RestTemplate restTemplate = new RestTemplate();
-            restTemplate.postForEntity("http://springorchestrator-ngfs-core-framework-apps.115.127.24.184.nip.io/orchestrator/" + sagaCommand.getCommand(), customer,String.class);
+            restTemplate.postForEntity("http://localhost:8080/orchestrator/" + sagaCommand.getCommand(), customer,String.class);
 
 
             System.out.println("Request no "+i + " is executed successfully");
@@ -255,9 +164,9 @@ public class OrchestratorController {
     @PostMapping("saga/threadCheck")
     public void threadCheck(@RequestBody  Customer customer) throws InterruptedException {
 
-        for(int i=1; i<=10; i++){
+        for(int i=0; i<10; i++){
 
-            TestThread t= new TestThread(i*100,customer);
+            TestThread t= new TestThread(i);
         }
 
 
@@ -269,7 +178,7 @@ public class OrchestratorController {
 
 
 
-    @PostMapping("orchestrator/{command}")
+    /*@PostMapping("orchestrator/{command}")
     public String postSagaCommand(@PathVariable("command") String command,@RequestBody Customer customer) throws IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InterruptedException {
 
 
@@ -324,5 +233,12 @@ public class OrchestratorController {
     return "done";
 
 
+    }*/
+
+
+    @PostMapping("orchestrator/{command}")
+    public String postCommand(@PathVariable("command") String command,@RequestBody Customer customer) throws IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InterruptedException {
+
+          return orchestratorService.postSagaCommand(command,customer);
     }
 }

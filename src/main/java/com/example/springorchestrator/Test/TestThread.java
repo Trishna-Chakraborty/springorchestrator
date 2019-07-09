@@ -17,7 +17,7 @@ public class TestThread implements Runnable {
 
 
 
-     Thread t;
+   /*  Thread t;
      int index;
      Customer customer;
      public TestThread(int index, Customer customer){
@@ -25,15 +25,15 @@ public class TestThread implements Runnable {
          this.index=index;
          this.customer=customer;
          t.start();
-     }
+     }*/
 
 
-    @Override
+  /*  @Override
     public void run() {
 
         Random rand = new Random();
 
-        for(int i=index; i<=index+100; i++) {
+        for(int i=index; i<index+100; i++) {
             customer.setId(""+i);
 
             System.out.println("Request no "+i + " is going to be executed");
@@ -57,5 +57,41 @@ public class TestThread implements Runnable {
         }
 
 
+    }*/
+
+
+
+    public int max=100;
+    static int  number=0;
+    int remainder;
+    static Object lock=new Object();
+    Thread t;
+
+    public TestThread(int remainder)
+    {
+
+        t=new Thread(this,""+remainder);
+        this.remainder=remainder;
+        t.start();
+    }
+
+    @Override
+    public void run() {
+        while (number < max-1) {
+            synchronized (lock) {
+                while (number % 10 != remainder) { // wait for numbers other than remainder
+                   if(number>max) break;
+                    try {
+                        lock.wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if(number>max) break;
+                System.out.println(Thread.currentThread().getName() + ": " + number);
+                number++;
+                lock.notifyAll();
+            }
+        }
     }
 }

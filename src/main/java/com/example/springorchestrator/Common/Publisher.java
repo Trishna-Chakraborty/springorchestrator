@@ -24,6 +24,14 @@ public class Publisher {
 
 
 
+    public String publish(String exchangeName,String bindingKey, String message){
+        rabbitTemplate.setReplyTimeout(60000);
+        System.out.println("Requesting to " + exchangeName+" with endPoint " + bindingKey+ " : " + message);
+        return  (String) rabbitTemplate.convertSendAndReceive(exchangeName,bindingKey, message);
+    }
+
+
+
     public void publishLog(String queue,Object message,String logType) throws IOException {
         ObjectWriter ow =  new ObjectMapper().writer().withDefaultPrettyPrinter();
         String json = ow.writeValueAsString(message);
