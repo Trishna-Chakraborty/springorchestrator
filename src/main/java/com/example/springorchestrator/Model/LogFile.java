@@ -17,7 +17,7 @@ public class LogFile {
     String callFlowInstanceId;
 
     String callFlowRefId;
-    String timeStamp;
+    Date  timeStamp;
     String api;
     String microservice;
     String payLoad;
@@ -40,11 +40,11 @@ public class LogFile {
         this.callFlowRefId = callFlowRefId;
     }
 
-    public String getTimeStamp() {
+    public Date getTimeStamp() {
         return timeStamp;
     }
 
-    public void setTimeStamp(String timeStamp) {
+    public void setTimeStamp(Date timeStamp) {
         this.timeStamp = timeStamp;
     }
 
@@ -96,9 +96,10 @@ public class LogFile {
         this.callFlowInstanceId=callFlowInstanceId;
         this.callFlowRefId = callFlowRefId;
         Date date = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
+        this.timeStamp=date;
+       /* SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
         String formattedDate = sdf.format(date);
-        this.timeStamp = formattedDate;
+        this.timeStamp = formattedDate;*/
         this.api = api;
         this.microservice = microservice;
         this.payLoad = payLoad;
