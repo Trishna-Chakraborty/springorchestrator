@@ -66,12 +66,14 @@ public class TestThread implements Runnable {
     int remainder;
     static Object lock=new Object();
     Thread t;
+    Customer customer;
 
-    public TestThread(int remainder)
+    public TestThread(int remainder,Customer customer)
     {
 
         t=new Thread(this,""+remainder);
         this.remainder=remainder;
+        this.customer=customer;
         t.start();
     }
 
@@ -89,9 +91,45 @@ public class TestThread implements Runnable {
                 }
                 if(number>max) break;
                 System.out.println(Thread.currentThread().getName() + ": " + number);
+                customer.setId(""+number);
+                Random rand=new Random();
+
+
+                int value = rand.nextInt(50);
+                try {
+                    TimeUnit.MILLISECONDS.sleep(value);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+               /* int id = rand.nextInt(3);
+                String[] arr={"postElectronicOrder","updateElectronicOrder","postOrder"};
+
+
+
+                RestTemplate restTemplate = new RestTemplate();
+                restTemplate.postForEntity("http://localhost:8080/orchestrator/" + arr[id], customer,String.class);
+
+
+                System.out.println("Request no "+number + " is executed successfully");*/
                 number++;
                 lock.notifyAll();
             }
+            System.out.println("Request no "+number + " is going to be executed");
+            Random rand=new Random();
+            int id = rand.nextInt(3);
+            String[] arr={"postElectronicOrder","updateElectronicOrder","postOrder"};
+
+
+
+            RestTemplate restTemplate = new RestTemplate();
+            restTemplate.postForEntity("http://localhost:8080/orchestrator/" + arr[id], customer,String.class);
+
+
+            System.out.println("Request no "+number + " is executed successfully");
+
+
+
         }
     }
 }

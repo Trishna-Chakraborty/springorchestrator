@@ -166,7 +166,7 @@ public class OrchestratorController {
 
         for(int i=0; i<10; i++){
 
-            TestThread t= new TestThread(i);
+            TestThread t= new TestThread(i,customer);
         }
 
 
