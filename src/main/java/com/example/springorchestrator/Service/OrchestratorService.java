@@ -91,20 +91,20 @@ public class OrchestratorService {
             Method method = this.getClass().getDeclaredMethod(sagaStep.getBuildJsonFrom() + "To" + sagaStep.getBuildJsonTo(), String.class);
             request = (String) method.invoke(this, request);
 
-            LogFile logFile = new LogFile(callFlowInstanceId,callFlowRefId, sagaStep.getEndPointName(), sagaStep.getServiceName(), request);
+           // LogFile logFile = new LogFile(callFlowInstanceId,callFlowRefId, sagaStep.getEndPointName(), sagaStep.getServiceName(), request);
 
-            request = (String) publisher.publish(sagaStep.getServiceName() + "_exchange", sagaStep.getEndPointName(), request);
+            request = (String) publisher.publish(callFlowInstanceId,sagaStep.getServiceName() + "_exchange", sagaStep.getEndPointName(), request);
             if (request == null) {
                 System.out.println("Error in " + sagaStep.getServiceName());
-                logFile.setStatus(Status.UNFINISHED);
+               /* logFile.setStatus(Status.UNFINISHED);
                 logFileRepository.save(logFile);
-                orchestratorLogPublisher.log(logFile);
+                orchestratorLogPublisher.log(logFile);*/
                 break;
             }
 
-            logFile.setStatus(Status.FINISHED);
+          /*  logFile.setStatus(Status.FINISHED);
             logFileRepository.save(logFile);
-            orchestratorLogPublisher.log(logFile);
+            orchestratorLogPublisher.log(logFile);*/
 
 
         }
@@ -116,60 +116,48 @@ public class OrchestratorService {
 
     }
 
-    public String deposit(Customer customer) throws JsonProcessingException {
+    public String deposit(Customer customer) throws IOException {
 
            String callFlowInstanceId= UUID.randomUUID().toString();
            ObjectMapper objectMapper= new ObjectMapper();
-           LogFile logFile;
+
            Account account= new Account();
            account.setId(customer.getId());
-           String response=(String) publisher.publish( "account_exchange", "check.account", objectMapper.writeValueAsString(account));
+
+
+
+           String response=(String) publisher.publish(callFlowInstanceId, "account_exchange", "check.account", objectMapper.writeValueAsString(account));
            if(response== null){
-               logFile = new LogFile(callFlowInstanceId,"1", "check.account","account", objectMapper.writeValueAsString(account));
-               logFile.setStatus(Status.UNFINISHED);
                return "Error in check Account";
-
            }
+
            else if(response.equals("true")){
-               logFile = new LogFile(callFlowInstanceId,"1", "check.account","account", objectMapper.writeValueAsString(account));
-               logFile.setStatus(Status.FINISHED);
+               response=(String) publisher.publish(callFlowInstanceId, "bank_exchange", "post.ledger", objectMapper.writeValueAsString(customer));
 
-               response=(String) publisher.publish( "bank_exchange", "post.ledger", objectMapper.writeValueAsString(customer));
                if(response== null){
-
-                   logFile = new LogFile(callFlowInstanceId,"1", "post.ledger","bank", objectMapper.writeValueAsString(account));
-                   logFile.setStatus(Status.UNFINISHED);
                    return "Error in post Ledger";
                }
 
-               logFile = new LogFile(callFlowInstanceId,"1", "post.ledger","bank", objectMapper.writeValueAsString(account));
-               logFile.setStatus(Status.FINISHED);
+               response=(String) publisher.publish( callFlowInstanceId,"bank_exchange", "post.bank", objectMapper.writeValueAsString(customer));
 
-               response=(String) publisher.publish( "bank_exchange", "post.bank", objectMapper.writeValueAsString(customer));
                if(response== null){
-                   logFile = new LogFile(callFlowInstanceId,"1", "post.bank","bank", objectMapper.writeValueAsString(account));
-                   logFile.setStatus(Status.UNFINISHED);
+
                    return "Error in post Bank ";
                }
-               logFile = new LogFile(callFlowInstanceId,"1", "post.bank","bank", objectMapper.writeValueAsString(account));
-               logFile.setStatus(Status.FINISHED);
+
            }
            else{
-
-               logFile = new LogFile(callFlowInstanceId,"1", "check.account","account", objectMapper.writeValueAsString(account));
-               logFile.setStatus(Status.FINISHED);
 
                Transaction transaction= new Transaction();
                transaction.setId(customer.getId());
                transaction.setFailed(true);
-               response=(String) publisher.publish( "transaction_exchange", "post.transaction",objectMapper.writeValueAsString(transaction));
+               response=(String) publisher.publish( callFlowInstanceId,"transaction_exchange", "post.transaction",objectMapper.writeValueAsString(transaction));
+
                if(response==null){
-                   logFile = new LogFile(callFlowInstanceId,"1", "post.transaction","transaction", objectMapper.writeValueAsString(account));
-                   logFile.setStatus(Status.UNFINISHED);
+
                    return "Error in transaction";
                }
-               logFile = new LogFile(callFlowInstanceId,"1", "post.transaction","transaction", objectMapper.writeValueAsString(account));
-               logFile.setStatus(Status.FINISHED);
+
 
            }
 

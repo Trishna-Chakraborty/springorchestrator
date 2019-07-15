@@ -1,5 +1,8 @@
 package com.example.springorchestrator.Common;
 
+import com.example.springorchestrator.Model.LogFile;
+import com.example.springorchestrator.Model.Status;
+import com.example.springorchestrator.Repository.LogFileRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.gson.Gson;
@@ -23,11 +26,31 @@ public class Publisher {
     Gson gson;
 
 
+    @Autowired
+    OrchestratorLogPublisher orchestratorLogPublisher;
 
-    public String publish(String exchangeName,String bindingKey, String message){
+
+    @Autowired
+    LogFileRepository logFileRepository;
+
+
+
+    public String publish(String callFlowInstanceId,String exchangeName,String bindingKey, String message) throws IOException {
+
         rabbitTemplate.setReplyTimeout(60000);
         System.out.println("Requesting to " + exchangeName+" with endPoint " + bindingKey+ " : " + message);
-        return  (String) rabbitTemplate.convertSendAndReceive(exchangeName,bindingKey, message);
+        String result=  (String) rabbitTemplate.convertSendAndReceive(exchangeName,bindingKey, message);
+        LogFile logFile = new LogFile(callFlowInstanceId,"1", bindingKey,exchangeName, message);
+        if(result==null) {
+            logFile.setStatus(Status.UNFINISHED);
+        }
+        else{
+            logFile.setStatus(Status.FINISHED);
+        }
+        logFileRepository.save(logFile);
+        orchestratorLogPublisher.log(logFile);
+        return result;
+
     }
 
 
