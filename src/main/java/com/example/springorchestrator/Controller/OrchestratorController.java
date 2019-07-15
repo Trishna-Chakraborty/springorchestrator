@@ -241,4 +241,10 @@ public class OrchestratorController {
 
           return orchestratorService.postSagaCommand(command,customer);
     }
+
+    @PostMapping("deposit")
+    public String postCommand(@RequestBody Customer customer) throws IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InterruptedException {
+
+        return orchestratorService.deposit(customer);
+    }
 }

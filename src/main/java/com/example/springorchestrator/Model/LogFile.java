@@ -17,7 +17,7 @@ public class LogFile {
     String callFlowInstanceId;
 
     String callFlowRefId;
-    Date  timeStamp;
+    Date timeStamp;
     String api;
     String microservice;
     String payLoad;
