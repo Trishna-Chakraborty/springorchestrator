@@ -63,7 +63,7 @@ public class OrchestratorController {
     @GetMapping("orchestrator/{command}")
     public void getOrder(@PathVariable("command")String command,String json) {
 
-        rabbitTemplate.setReplyTimeout(60000);
+        //rabbitTemplate.setReplyTimeout(60000);
         //rabbitTemplate.setUseTemporaryReplyQueues(false);
         SagaCommand sagaCommand = sagaCommandRepository.findSagaCommandByCommand(command);
         List<SagaStep> sagaStepList = sagaCommand.getSagaStepList();

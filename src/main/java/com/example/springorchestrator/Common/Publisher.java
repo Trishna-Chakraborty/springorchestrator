@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.gson.Gson;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,12 @@ import java.io.IOException;
 
 @Component
 public class Publisher {
+
+
+
+    /*@Value("${replyTimeOut}")
+    private  long replyTimeOut;*/
+
     @Autowired
     RabbitTemplate rabbitTemplate;
 
@@ -37,7 +44,7 @@ public class Publisher {
 
     public String publish(String callFlowInstanceId,String exchangeName,String bindingKey, String message) throws IOException {
 
-        rabbitTemplate.setReplyTimeout(60000);
+        //rabbitTemplate.setReplyTimeout(replyTimeOut);
         System.out.println("Requesting to " + exchangeName+" with endPoint " + bindingKey+ " : " + message);
         String result=  (String) rabbitTemplate.convertSendAndReceive(exchangeName,bindingKey, message);
         LogFile logFile = new LogFile(callFlowInstanceId,"1", bindingKey,exchangeName, message);
